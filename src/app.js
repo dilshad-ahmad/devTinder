@@ -2,40 +2,26 @@ const express = require("express");
 
 const app = express()
 
+ const {adminAuth} =require('./middlewares/auth')
 
-
+ app.use("/admin",adminAuth);
 
 app.get("/user",(req,res) => {
-    res.send({firstname:"Dilshad",lastname:"Ahmad"})
-});
-
-app.post("/user", (req,res) => {
-    res.send("Data sucessfully saved in a database")
+    res.send("User data send ")
 
 });
 
-app.delete("/user", (req,res) => {
-    res.send("Data are Deleted ")
-});
-
-//PUT is used in HTTP to update whole data 
-app.put("/user/data", (req,res) => {
-    res.send({firstname:"Naushad",lastname:"Ahmad"})
-});
-
-//PATCH is used to update partial data 
-app.patch("/user/data",(req,res) => {
-    console.log(req.body);
-    res.send({firstname:"Naushad",lastname:"Ali"})
+app.get("/admin",(req,res) => {
+    res.send("Admin data send successfully")
 })
 
-
-
-//This will match all the all HTTP method API call to /test 
-app.use("/test", (req,res) => {
-    res.send("Test is checked ")
-
+app.get("/admin/getAllData", (req,res) => {
+    res.send("All data send ")
 });
+
+app.get("/admin/delteUser", (req,res) => {
+    res.send("All data are delted ") 
+})
 
 
 
