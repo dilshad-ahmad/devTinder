@@ -5,14 +5,13 @@ const User =require("./models/user");
 
 
 
-
-
 app.post("/signup",  async (req,res) => {
+  //crating a new instance of user model
     const user = new User ({
-        firstName:"Dilshad",
-        lastName:"Ahmad",
-        emailId:"laddu4591@gmail.com",
-        password:"laddu@2003"
+        firstName:"Anand",
+        lastName:"pal",
+        emailId:"pal@gmail.com",
+        password:"anand@2003",
     });
 
     try {
