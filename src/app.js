@@ -5,6 +5,12 @@ const User = require("./models/user");
 
 app.use(express.json());
 
+
+
+
+
+
+
 app.post("/signup", async (req, res) => {
   //crating a new instance of user model
   const user = new User(req.body);
@@ -54,6 +60,35 @@ app.get("/feed", async (req,res) => {
 
   }
 
+})
+
+
+//Delete a user from database
+app.delete("/user", async(req,res) => {
+  const userId = req.body.userId
+  try{
+    const user = await User.findByIdAndDelete({_id: userId})
+    res.send("user deleted sucessfully ");
+
+  }catch(err) {
+    res.status(400).send("something went wrong ")
+
+  } 
+})
+
+//update data of user
+app.patch("/user",async(req,res) => {
+  const userId = req.body.userId;
+  const data = req.body;
+  console.log(data)
+  try {
+    await User.findByIdAndUpdate ({_id: userId },data);
+    res.send("user updated successfully ")
+
+  } catch(err) {
+    res.status(401).send("something went wrong ")
+
+  }
 })
 
 
