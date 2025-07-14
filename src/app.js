@@ -2,6 +2,7 @@ const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
 const User = require("./models/user");
+const { Error } = require("mongoose");
 
 app.use(express.json());
 
@@ -77,16 +78,36 @@ app.delete("/user", async(req,res) => {
 })
 
 //update data of user
-app.patch("/user",async(req,res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId",async(req,res) => {
+  const userId = req.params?.userId;
   const data = req.body;
   console.log(data)
   try {
-    await User.findByIdAndUpdate ({_id: userId },data);
-    res.send("user updated successfully ")
+    const ALLOWED_UPDATES = ["photoUrl","about","gender","age","skills"];
+    const isUpdateAllowed = Object.keys(data).every((k) => 
+    ALLOWED_UPDATES.includes(k)
+  );
+  if(!isUpdateAllowed) {
+    throw new Error ("update not allowed ")
+    
+  }
+
+  if(data?.skills.length > 10 ) {
+    throw new Error("skill can not be more than 10")
+  }
+  
+
+     const user = await User.findByIdAndUpdate ({_id: userId },data, {
+      returnDocument : "after",
+      runValidators: true,
+     });
+     console.log(user)
+     res.send("user updated sucessfully ")
+
+    
 
   } catch(err) {
-    res.status(401).send("something went wrong ")
+    res.status(401).send("UPDATE FAILED " + err.message)
 
   }
 })
