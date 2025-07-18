@@ -2,34 +2,75 @@ const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
 const User = require("./models/user");
-const { Error } = require("mongoose");
+const {validateSignUpData} = require('./utils/validation');
+const bcrypt = require("bcrypt")
+
 
 app.use(express.json());
 
 
 
 
-
-
-
 app.post("/signup", async (req, res) => {
-  //crating a new instance of user model
-  const user = new User(req.body);
+  
+   try {
+    //validation of data 
+    validateSignUpData(req);
 
-  try {
+    const {firstName,lastName,emailId,password} = req.body
+
+    //Encrypt the password 
+    const passwordHash = await bcrypt.hash(password,10);
+    console.log(passwordHash)
+
+    //creating a  new instance of the user model 
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password:passwordHash,
+
+    });
+
 
     await user.save();
     res.send("User send sucessfully !")
 
 
   } catch (err) {
-    res.status(400).send("Error saving the user" + err.message)
+    res.status(400).send("Error:" + err.message)
 
   }
 
 
 });
 
+
+//Login API 
+
+app.post("/login",async(req,res) => {
+  try{  
+    const {emailId,password} =req.body;
+    const user = await User.findOne({emailId:emailId});
+    if(!user) {
+      throw new Error ("EmailId is not present in DB")
+    }
+
+    const isPasswordValid = await bcrypt.compare(password,user.password);
+    if(isPasswordValid) {
+      res.send("Login sucessful!!")
+    }else {
+      throw new Error ("Password id not valid ")
+    }
+
+
+  } catch (err) {
+    res.status(400).send("Error:" + err.message)
+  }
+})
+
+
+//Get API 
 app.get("/user", async (req,res) => {
   const userEmail = req.body.emailId; 
   try { 
