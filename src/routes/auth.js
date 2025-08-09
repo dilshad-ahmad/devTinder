@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt")
 
 
 
-
+//Signup API
 authRouter.post("/signup", async (req, res) => {
   console.log("Signup sucessfully checked")
   
@@ -75,6 +75,17 @@ authRouter.post("/login",async(req,res) => {
     res.status(400).send("Error:" + err.message)
   }
 })
+
+//Logout API 
+authRouter.post("/logout", async (req,res) => {
+  res.cookie("token",null, {
+    expires: new Date(Date.now())
+  });
+  res.send("Logout sucessfully")
+
+})
+
+
 
 
 
